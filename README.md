@@ -1,286 +1,127 @@
-# Fine-Grained Discrimination of Invasive and Native Marine Vegetation Using a Hybrid Deep Learning Model for Selective Underwater Plant Removal
+# Marine Vegetation Discrimination
 
-## Overview
+**Fine-Grained Discrimination of Invasive and Native Marine Vegetation Using a Hybrid Deep Learning Model for Selective Underwater Plant Removal**
 
-Marine ecosystems are threatened by invasive vegetation that can compete with native species for light, space, and nutrients. Removing invasive plants is challenging because they may resemble beneficial native vegetation in colour, texture, branching patterns, and overall morphology.
+Academic mini-project · B.Tech Artificial Intelligence and Data Science · Saveetha Engineering College
 
-Existing removal methods, including manual diver intervention and mechanical harvesting, can be labour-intensive or risk damaging native vegetation and surrounding marine habitats.
+> **Status:** M1–M6 experiments and the image-analysis demonstration are complete and frozen. This is an academic research prototype and decision-support demonstration—not a validated underwater plant-removal system.
 
-This research proposes a hybrid deep learning system to distinguish invasive marine vegetation from visually similar native species. The proposed approach combines underwater image enhancement, plant detection and segmentation, attention-based feature extraction, and metric learning to support fine-grained classification.
+## Project overview
 
-The system is designed to identify marine vegetation, predict its invasive or native status, provide a confidence score, and flag uncertain predictions for human review. It aims to establish a foundation for future selective underwater plant removal.
+This project investigates species-level classification of marine macroalgae and ecological grouping into native and invasive categories. The completed workflow includes dataset auditing, a ResNet18 baseline, exploratory Grad-CAM diagnostics, a binary ecological classification experiment, a hybrid CBAM + metric-learning model, and an integrated Gradio demonstration.
 
-## Objectives
+The ecological mapping for the IMO dataset is specific to **Galicia, Spain**. Invasive/native status is region-dependent and must not be generalized to other locations without local ecological verification.
 
-- Develop a computer vision pipeline for underwater marine vegetation analysis.
-- Improve underwater image quality through colour correction, contrast enhancement, and denoising.
-- Detect and segment marine vegetation from underwater backgrounds.
-- Distinguish visually similar invasive and native marine plant species.
-- Investigate attention mechanisms to emphasize discriminative visual features.
-- Use metric learning to improve feature-space separation between similar species.
-- Generate classification confidence scores and flag uncertain cases for human review.
-- Evaluate the proposed approach against suitable baseline models.
-- Establish a foundation for future integration with underwater robotic systems.
+## Completed milestones
 
-## Proposed Methodology
+| Milestone | Completed work | Result / qualification |
+|---|---|---|
+| M1 — Dataset audit | Audited ECU-MSS-2 archives, image integrity, duplicates and grouped manifests. | Four classes: Amphibolis, Background, Halophila and Posidonia. No invasive/native labels or segmentation masks. |
+| M2 — Baseline | ResNet18 classification experiment on ECU-MSS-2. | Validation accuracy **99.51%** (820/824); clean test accuracy **86.73%** (869/1002). The gap indicates a generalization limitation. |
+| M3 — Explainability | Exploratory Grad-CAM diagnostics on selected validation images. | Weak localization exploration only; not segmentation. |
+| M4 — Binary ecological experiment | ResNet18 Native/Invasive experiment on selected IMO images. | Independent test: **86.02% accuracy**, **86.57% balanced accuracy**, **0.86 macro F1** (422 images). |
+| M5 — Hybrid model | ResNet18 + CBAM, 256D embedding, classification + metric-learning objectives; six species. | Validation species accuracy **86.81%**, macro F1 **72.03%**; ecological accuracy **90.74%**. |
+| M6 — Integration | Train-only species prototypes, inference, Grad-CAM, decision logic and Gradio demo. | Human-supervised decision support. Automatic removal disabled. |
 
-The proposed system follows a sequence of image processing and deep learning stages.
+**Do not compare or combine metrics from different experiments as if they came from one test set.** M4's 86.02% is independent-test performance; M5's metrics above are validation performance.
 
-### 1. Image Data Collection
+## Datasets
 
-Collect suitable underwater marine vegetation images from accessible datasets or other appropriately authorized sources. Identify the available species categories and prepare labels for model development.
+### ECU-MSS-2
+Used for M1–M3. The four image classes are Amphibolis, Background, Halophila and Posidonia. The dataset does not provide invasive/native ecological labels or segmentation masks.
 
-### 2. Underwater Image Enhancement
+Source: [ECU-MSS-2 dataset](https://ro.ecu.edu.au/datasets/141/).
 
-Underwater images may contain colour distortion, low contrast, backscatter, blur, and particulate noise. The proposed preprocessing stage will investigate:
+### IMO Dataset
+Used for M4–M5. Dataset of high-resolution intertidal macroalgae images, DOI [10.5281/zenodo.14185867](https://doi.org/10.5281/zenodo.14185867), CC BY 4.0 according to its record.
 
-- Colour correction and restoration.
-- Contrast enhancement using techniques such as CLAHE.
-- Denoising and visual detail improvement.
-- Assessment of image quality before and after enhancement.
+Six selected species and the ecological mapping used in this study:
 
-### 3. Plant Detection and Segmentation
+| Species | Study label (Galicia context) |
+|---|---|
+| *Asparagopsis armata* | Invasive |
+| *Sargassum muticum* | Invasive |
+| *Bifurcaria bifurcata* | Native |
+| *Codium* spp. | Native |
+| *Ericaria selaginoides* | Native |
+| *Saccorhiza polyschides* | Native |
 
-Identify marine vegetation in the underwater scene and separate the target plant regions from surrounding water, coral, and other background objects. Detection and segmentation approaches will be selected according to dataset availability and project requirements.
+The IMO imagery is intertidal macroalgae imagery (including UAV/in-situ acquisition), not a validated underwater robotic-removal dataset. M4's independent test split was sealed and was not used for M5/M6 training, validation, selection or tuning. M5 train/validation orthomosaic groups are disjoint, but flights overlap; unseen-flight/location generalization is not established.
 
-### 4. Hybrid Fine-Grained Deep Learning Model
+## M5 hybrid architecture
 
-The proposed hybrid model will investigate the combination of:
+- ResNet18 feature backbone.
+- CBAM channel and spatial attention.
+- 256-dimensional normalized embedding.
+- Six-species classification head.
+- Combined classification, triplet and supervised-contrastive objectives.
 
-- **Deep feature extraction:** Learning useful visual representations from marine vegetation images.
-- **Attention mechanism:** Emphasizing important regions and features that help distinguish visually similar species.
-- **Metric learning:** Learning an embedding space that encourages similar species representations to be appropriately grouped and different classes to be separated.
-- **Classification:** Predicting the relevant species category and its invasive or native status.
+M5 validation set: 432 images; species accuracy 86.81% (375/432), species macro F1 72.03%, ecological accuracy 90.74%, ecological macro F1 84.35%. No *Asparagopsis armata* examples occur in this validation split, so its validation performance is not established.
 
-The final architecture will be documented after implementation and experimentation.
+## M6 demonstration
 
-### 5. Species Classification and Confidence Scoring
+The restored Gradio interface accepts an image and displays the predicted species/category, softmax probabilities, cosine similarities to train-only species prototypes, Grad-CAM visualization and a provisional decision recommendation.
 
-The system is intended to produce:
+### Safety and interpretation limits
 
-- Predicted marine vegetation species or category.
-- Invasive or native classification.
-- Prediction confidence score.
-- Human-review flag for uncertain predictions.
+- Softmax probability and cosine similarity are **not calibrated confidence**.
+- High similarity can occur for an incorrect prediction.
+- Grad-CAM indicates influential regions; it is not a segmentation mask or precise removal boundary.
+- The six-class closed-set classifier cannot reliably identify unknown or unsupported species.
+- An invasive prediction is only a potential removal candidate, never authorization to remove a plant.
+- Human verification is mandatory for every prediction; expert approval is required before ecological action.
+- Automatic removal is disabled. No robot control or physical removal was implemented or validated.
+- The exploratory 0.795 threshold was examined on the same validation data and is not an unbiased or validated safety threshold.
 
-A confidence threshold will be defined and evaluated during experimentation. Predictions below the selected threshold will be referred for human review rather than treated as reliable removal decisions.
+## Repository contents
 
-### 6. Model Evaluation and Testing
+The primary working notebook is being prepared for publication as a cleaned notebook with saved cell outputs removed. Supporting source modules, result figures and setup instructions should be added as separately documented files. Raw datasets, extracted image collections and large model checkpoints are not stored in this Git repository.
 
-The proposed system will be evaluated using appropriate classification and detection metrics, depending on the implemented components.
-
-Planned classification metrics include:
-
-- Accuracy
-- Precision
-- Recall
-- Specificity
-- F1-score
-- Matthews Correlation Coefficient (MCC)
-
-Where appropriate, the project will compare the proposed approach with baseline CNN classifiers and relevant detection or segmentation models, including YOLO and Mask R-CNN.
-
-Actual performance values and comparisons will be reported only after experiments have been completed.
-
-## Proposed System Workflow
-
-```text
-Underwater Image Collection
-            |
-            v
-Image Preprocessing
-            |
-            v
-Underwater Image Enhancement
-            |
-            v
-Marine Plant Detection
-            |
-            v
-Plant Segmentation
-            |
-            v
-Deep Feature Extraction
-            |
-            v
-Attention + Metric Learning
-            |
-            v
-Species Classification
-            |
-            v
-Invasive / Native Prediction
-            |
-            v
-Confidence Score and Evaluation
-            |
-            v
-Human Review for Uncertain Cases
-            |
-            v
-Foundation for Future Selective Removal
-```
-
-## Functional Requirements
-
-- Accept underwater images of marine vegetation.
-- Improve image quality using suitable preprocessing techniques.
-- Detect and localize marine vegetation.
-- Segment plant regions from the surrounding environment.
-- Extract discriminative visual features.
-- Classify invasive and native vegetation.
-- Generate confidence scores and human-review flags.
-- Evaluate model performance using appropriate metrics.
-- Support comparison with baseline approaches.
-
-## Non-Functional Requirements
-
-- **Accuracy:** Reliable discrimination between visually similar species.
-- **Robustness:** Evaluation under different visibility and image-quality conditions.
-- **Reliability:** Confidence-aware predictions and handling of uncertain cases.
-- **Scalability:** Potential to incorporate additional species as labelled data becomes available.
-- **Efficiency:** Consideration of computational requirements for future practical deployment.
-- **Safety:** No automatic removal decision based solely on an uncertain classification.
-- **Extensibility:** Future integration with underwater robotic monitoring and removal systems.
-
-## Expected Outcomes
-
-The project aims to investigate whether combining underwater image enhancement, segmentation, attention-based feature extraction, and metric learning can improve invasive–native marine vegetation discrimination.
-
-Expected outcomes include:
-
-- Improved visual feature quality for underwater plant analysis.
-- More reliable identification of visually similar marine vegetation.
-- Confidence-aware classification with uncertain-case handling.
-- Quantitative evaluation against selected baseline approaches.
-- A foundation for future AI-assisted selective marine vegetation management.
-
-These are research objectives and expected outcomes, not experimentally verified results.
-
-## Technologies and Tools
-
-The following technologies are candidates for the implementation, subject to the final architecture and development environment:
-
-- **Programming language:** Python
-- **Image processing:** OpenCV
-- **Numerical computing:** NumPy
-- **Data analysis:** Pandas
-- **Deep learning:** PyTorch or TensorFlow
-- **Model evaluation:** Scikit-learn
-- **Visualization:** Matplotlib
-- **Version control:** Git and GitHub
-
-The final tools and library versions will be documented after they are selected and used in the implementation.
-
-## Repository Structure
-
-The repository is intended to follow a modular structure as the project develops.
+Suggested structure:
 
 ```text
 marine-vegetation-discrimination/
 ├── README.md
 ├── .gitignore
-├── requirements.txt
-├── configs/
-├── data/
-│   └── README.md
 ├── notebooks/
+│   └── Mini_Project_clean.ipynb
 ├── src/
-│   ├── preprocessing/
-│   ├── enhancement/
-│   ├── detection/
-│   ├── segmentation/
-│   ├── models/
-│   ├── classification/
-│   └── evaluation/
-├── tests/
-├── results/
-│   └── README.md
-└── docs/
+├── docs/
+│   ├── methodology.md
+│   ├── experimental-results.md
+│   └── limitations-and-safety.md
+└── results/
+    └── figures/
 ```
 
-This is a proposed structure. Directories and files will be added as the corresponding components are implemented.
+## Reproducibility
 
-### Directory Guidelines
+The completed notebook was developed in Google Colab and uses Google Drive paths under `/content/drive/MyDrive/Marine_Project`. The current notebook depends on the author's Drive artifacts, datasets and saved checkpoints. Cloning this repository alone is not yet sufficient to reproduce all experiments or launch the Gradio demo. Dataset acquisition, artifact placement and environment setup instructions must be followed once published.
 
-- `configs/` — Configuration files and experiment settings.
-- `data/` — Dataset organization instructions; large datasets may be stored separately.
-- `notebooks/` — Exploratory data analysis and experimental notebooks.
-- `src/` — Source code for the image processing and model pipeline.
-- `tests/` — Tests for implemented components.
-- `results/` — Evaluation outputs, plots, and experiment summaries.
-- `docs/` — Research documentation and technical notes.
+Do not rerun training or evaluate the sealed M4 test set as part of routine demonstration setup.
 
-## Dataset and Data Management
+## Future work
 
-The final dataset source, species categories, image count, and train-validation-test split will be documented after dataset selection and verification.
-
-Dataset preparation should account for class balance, image quality, annotation quality, and the availability of species-level labels.
-
-Dataset images and annotations must be shared only when their applicable licences and permissions allow redistribution. Where redistribution is not permitted, provide instructions for obtaining the data from its original source.
-
-## Installation and Usage
-
-The installation and execution instructions will be added after the source code, dependencies, and model architecture have been implemented.
-
-The intended usage workflow is:
-
-1. Prepare the required dataset and annotations.
-2. Configure the preprocessing and image-enhancement pipeline.
-3. Run detection and segmentation where implemented.
-4. Train or load the selected classification model.
-5. Perform inference on test images.
-6. Evaluate predictions and confidence scores.
-7. Review the results and document limitations.
-
-No working installation or inference command is claimed until the corresponding code is available.
-
-## Research Significance and Sustainable Development Goals
-
-This research aligns with the following Sustainable Development Goals:
-
-- **SDG 14 — Life Below Water:** Supports research into marine biodiversity protection and more selective identification of invasive vegetation.
-- **SDG 9 — Industry, Innovation and Infrastructure:** Applies computer vision and deep learning to a marine environmental challenge.
-- **SDG 13 — Climate Action:** Contributes to broader environmental sustainability research through improved marine ecosystem monitoring.
-
-The proposed system is intended as a decision-support and research foundation. Its real-world ecological benefits will depend on model validation, field testing, and appropriate human oversight.
-
-## Limitations and Future Work
-
-Potential limitations include insufficient labelled images, variation between marine environments, severe underwater image degradation, class imbalance, and difficulty distinguishing closely related species.
-
-Future work may investigate:
-
-- Larger and more diverse underwater vegetation datasets.
-- Improved underwater image restoration.
-- More effective attention and metric-learning architectures.
-- Better confidence calibration and uncertainty estimation.
-- Testing across different visibility conditions and species pairs.
-- Optimization for resource-constrained underwater devices.
-- Integration with remotely operated vehicles (ROVs) or robotic removal systems.
-
-Actual feasibility and performance will need to be established through experimentation and field validation.
+- Add labelled segmentation masks and evaluate pixel-level segmentation.
+- Expand datasets across regions, acquisition devices, depths and visibility conditions.
+- Conduct independent external and unseen-flight/location evaluation.
+- Investigate calibrated uncertainty and open-set/unknown-species detection.
+- Evaluate thresholds on a separate calibration set.
+- Validate ecological labels with local marine experts.
+- Only after extensive field validation, investigate human-supervised ROV integration.
 
 ## References
 
-1. Gu, Z. et al. *Underwater Computational Imaging: A Survey*. Intelligent Marine Technology and Systems, 2023.
-2. Drews-Jr, P. L. et al. *Underwater Image Segmentation Using Deep Learning Techniques*. Journal of the Brazilian Computer Society, 2021.
-3. Islam, M. J., Xia, Y., and Sattar, J. *Fast Underwater Image Enhancement for Improved Visual Perception*. IEEE Robotics and Automation Letters, 2020.
-4. Goodfellow, I., Bengio, Y., and Courville, A. *Deep Learning*. MIT Press.
-5. Szeliski, R. *Computer Vision: Algorithms and Applications*. Springer.
+1. [ECU-MSS-2 dataset](https://ro.ecu.edu.au/datasets/141/).
+2. [IMO Dataset, Zenodo DOI 10.5281/zenodo.14185867](https://doi.org/10.5281/zenodo.14185867).
 
-Full bibliographic details and publication identifiers will be verified before the final research submission.
+## Project information
 
-## Project Information
-
-- **Project title:** Fine-Grained Discrimination of Invasive and Native Marine Vegetation Using a Hybrid Deep Learning Model for Selective Underwater Plant Removal
-- **Programme:** B.Tech Artificial Intelligence and Data Science
-- **Institution:** Saveetha Engineering College, Chennai, Tamil Nadu, India
-- **Project type:** Academic mini-project and research study
-- **Team number:** 160
-- **Project status:** In progress
-- **Faculty guide:** Dr. R. Augustian Isaac, Professor, Department of AIML
+- Programme: B.Tech Artificial Intelligence and Data Science
+- Institution: Saveetha Engineering College, Chennai, India
+- Project type: Academic mini-project and research study
+- Team number: 160
+- Faculty guide: Dr. R. Augustian Isaac, Professor, Department of AIML
 
 ---
-
-**Disclaimer:** This repository documents an academic research project. The proposed methodology, expected outcomes, and future applications do not imply that a complete system has been implemented, validated, or deployed. Experimental results will be added when supported by actual testing.
+**Research disclaimer:** This repository documents an academic prototype and recorded experiments. It does not claim validated underwater segmentation, calibrated confidence, autonomous operation, robotic control, or safe/approved physical plant removal.
