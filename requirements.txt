@@ -1,0 +1,16 @@
+torch>=2.1
+torchvision>=0.16
+numpy
+pandas
+scipy
+scikit-learn
+statsmodels
+matplotlib
+seaborn
+pillow
+opencv-python
+scikit-image
+imagehash
+tqdm
+gradio
+pytest

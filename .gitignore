@@ -1,0 +1,20 @@
+# data and model artefacts (do not commit)
+data/
+datasets/
+*.zip
+*.pth
+*.pt
+*.ckpt
+
+# python / notebooks
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+.pytest_cache/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
