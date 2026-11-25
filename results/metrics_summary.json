@@ -1,0 +1,128 @@
+{
+  "note": "All values taken from stored outputs of notebooks/Mini_Project.ipynb. Validation and independent-test results are kept separate.",
+  "M1_data_audit": {
+    "ecu_mss2_images": 5201,
+    "cross_split_duplicate_records": 92,
+    "clean_test_images": 1002,
+    "phash_candidate_pairs_confirmed": 137,
+    "perceptual_groups": 132,
+    "train_images": 3290,
+    "val_images": 824
+  },
+  "M2_baseline_resnet18_4class": {
+    "validation": {
+      "images": 824,
+      "accuracy": 0.9951
+    },
+    "clean_test": {
+      "images": 1002,
+      "accuracy": 0.8673,
+      "macro_f1": 0.8693
+    },
+    "initial_unaudited_test_accuracy": 0.8942
+  },
+  "M2_clahe_experiment_val_823": {
+    "original": 0.9951,
+    "clahe_clip2.0": 0.9903,
+    "clahe_clip1.0": 0.9927
+  },
+  "M4_binary_resnet18": {
+    "validation": {
+      "images": 1249,
+      "accuracy": 0.956,
+      "balanced_accuracy": 0.908,
+      "macro_f1": 0.8883
+    },
+    "independent_test": {
+      "images": 422,
+      "accuracy": 0.8602,
+      "balanced_accuracy": 0.8657,
+      "macro_f1": 0.86,
+      "native": {
+        "precision": 0.95,
+        "recall": 0.78,
+        "f1": 0.86,
+        "support": 224
+      },
+      "invasive": {
+        "precision": 0.79,
+        "recall": 0.95,
+        "f1": 0.86,
+        "support": 198
+      },
+      "species_accuracy": {
+        "Asparagopsis armata": "103/103",
+        "Sargassum muticum": "86/95",
+        "Bifurcaria bifurcata": "43/43",
+        "Ericaria selaginoides": "73/74",
+        "Saccorhiza polyschides": "58/107"
+      }
+    }
+  },
+  "M5_hybrid_resnet18_cbam_metric_learning": {
+    "split": "validation only (432 images); independent test NOT accessed",
+    "best_epoch": 16,
+    "parameters": 11605448,
+    "species_accuracy": 0.8681,
+    "macro_f1_six_classes": 0.7203,
+    "macro_f1_five_supported_classes_computed": 0.864,
+    "note_macro_f1": "Asparagopsis armata has 0 validation images and scores 0 in the six-class macro average.",
+    "ecological_accuracy": 0.9074,
+    "ecological_macro_f1": 0.8435,
+    "per_species_f1": {
+      "Asparagopsis armata": 0.0,
+      "Bifurcaria bifurcata": 0.9344,
+      "Codium spp.": 0.8889,
+      "Ericaria selaginoides": 0.8977,
+      "Saccorhiza polyschides": 0.8571,
+      "Sargassum muticum": 0.7436
+    },
+    "ecological_confusion_[[NativeNative, NativeInvasive],[InvasiveNative, InvasiveInvasive]]": [
+      [
+        334,
+        17
+      ],
+      [
+        23,
+        58
+      ]
+    ]
+  },
+  "M6_review_policy_validation_432": [
+    {
+      "threshold": 0.7,
+      "accepted": 415,
+      "review": 17,
+      "coverage": 0.9606,
+      "accepted_accuracy": 0.8843
+    },
+    {
+      "threshold": 0.75,
+      "accepted": 409,
+      "review": 23,
+      "coverage": 0.9468,
+      "accepted_accuracy": 0.8924
+    },
+    {
+      "threshold": 0.78,
+      "accepted": 401,
+      "review": 31,
+      "coverage": 0.9282,
+      "accepted_accuracy": 0.9002
+    },
+    {
+      "threshold": 0.79,
+      "accepted": 390,
+      "review": 42,
+      "coverage": 0.9028,
+      "accepted_accuracy": 0.9103
+    },
+    {
+      "threshold": 0.795,
+      "accepted": 363,
+      "review": 69,
+      "coverage": 0.8403,
+      "accepted_accuracy": 0.9284
+    }
+  ]
+}

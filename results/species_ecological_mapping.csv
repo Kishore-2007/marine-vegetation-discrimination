@@ -1,0 +1,7 @@
+species,status,region,images,train_m5,val_m5
+Asparagopsis armata,Invasive,"Galicia, Spain",125,22,0
+Sargassum muticum,Invasive,"Galicia, Spain",323,147,81
+Bifurcaria bifurcata,Native,"Galicia, Spain",666,501,122
+Codium spp.,Native,"Galicia, Spain",377,359,18
+Ericaria selaginoides,Native,"Galicia, Spain",960,803,83
+Saccorhiza polyschides,Native,"Galicia, Spain",748,513,128
